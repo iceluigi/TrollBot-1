@@ -36,7 +36,6 @@ namespace TrollBot
             {
                 Console.WriteLine("Something went wrong when attempting to login!\n{0}", ex.ToString());
                 Console.WriteLine("\nExiting program. Press any key to continue.");
-                Console.ReadKey();
                 return;
             }
 
