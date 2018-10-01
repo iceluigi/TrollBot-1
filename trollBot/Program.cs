@@ -1,25 +1,39 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 
 namespace TrollBot
 {
+    /// <summary>
+    /// The main class an entry point
+    /// </summary>
     class Program
     {
+        /// <summary>
+        /// The main entry point of the program.
+        /// </summary>
+        /// <param name="args">Arguments passed in via command line. Currently not supported.</param>
         static void Main(string[] args)
         {
             new Program().MainAsync().GetAwaiter().GetResult();
+            Console.ReadKey();
         }
 
+        /// <summary>
+        /// The main entry point of the program, as an Async task.
+        /// </summary>
+        /// <returns>Async task</returns>
         public async Task MainAsync()
         {
-            // Try to retrieve config
-            Config config;
             try
             {
-                config = JsonConvert.DeserializeObject<Config>(System.IO.File.ReadAllText("./config.json"));
+                Services.ConfigureServices();
+                var services = Services.Current;
+                var config = JsonConvert.DeserializeObject<Config>(System.IO.File.ReadAllText("./config.json"));
 
                 // Check config to make sure token exists...
                 if (config.Token == String.Empty || config.Token == null)
@@ -27,10 +41,12 @@ namespace TrollBot
                     throw new Exception("String retrieved from config is empty or null.");
                 }
 
-                var client = new DiscordSocketClient();
+                var client = services.GetRequiredService<DiscordSocketClient>();
                 client.Log += LogAsync;
+                services.GetRequiredService<CommandService>().Log += LogAsync;
                 await client.LoginAsync(TokenType.Bot, config.Token);
                 await client.StartAsync();
+                await services.GetRequiredService<CommandHandler>().InitializeAsync();
             }
             catch(Exception ex)
             {
@@ -43,6 +59,11 @@ namespace TrollBot
             await Task.Delay(-1);
         }
 
+        /// <summary>
+        /// Method to call any time something needs to be logged.
+        /// </summary>
+        /// <param name="log">The message to be logged</param>
+        /// <returns>Async task</returns>
         private Task LogAsync(LogMessage log)
         {
             Console.WriteLine(log.ToString());
