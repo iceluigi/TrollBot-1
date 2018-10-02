@@ -24,6 +24,11 @@ namespace TrollBot
         }
 
         /// <summary>
+        /// Represents the path to the config json file.
+        /// </summary>
+        private const string configPath = "./config.json";
+
+        /// <summary>
         /// The main entry point of the program, as an Async task.
         /// </summary>
         /// <returns>Async task</returns>
@@ -31,9 +36,9 @@ namespace TrollBot
         {
             try
             {
-                Services.ConfigureServices();
-                var services = Services.Current;
-                var config = JsonConvert.DeserializeObject<Config>(System.IO.File.ReadAllText("./config.json"));
+                Service.ConfigureServices();
+                var services = Service.Current;
+                var config = JsonConvert.DeserializeObject<Config>(System.IO.File.ReadAllText(configPath));
 
                 // Check config to make sure token exists...
                 if (config.Token == String.Empty || config.Token == null)
@@ -46,7 +51,7 @@ namespace TrollBot
                 services.GetRequiredService<CommandService>().Log += LogAsync;
                 await client.LoginAsync(TokenType.Bot, config.Token);
                 await client.StartAsync();
-                await services.GetRequiredService<CommandHandler>().InitializeAsync();
+                await services.GetRequiredService<Services.CommandHandler>().InitializeAsync();
             }
             catch(Exception ex)
             {

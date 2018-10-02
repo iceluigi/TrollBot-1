@@ -262,3 +262,6 @@ __pycache__/
 
 # Ignore config file which could contain sensitive info
 config.json
+
+# Ignore roast config files
+roasts.txt
