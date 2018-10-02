@@ -3,18 +3,19 @@ using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Commands;
 using Discord.WebSocket;
+using TrollBot.Services;
 
 namespace TrollBot
 {
     /// <summary>
     /// Represents the singleton hub of all Services for the application
     /// </summary>
-    class Services
+    class Service
     {
         /// <summary>
         /// Initializes a new instance of the Services class. Private as a singleton.
         /// </summary>
-        private Services() { }
+        private Service() { }
 
         /// <summary>
         /// The backing field for the singleton instance of Services.
@@ -39,6 +40,7 @@ namespace TrollBot
             _current = new ServiceCollection()
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
+                .AddSingleton<RoastService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<HttpClient>()
                 .BuildServiceProvider();
