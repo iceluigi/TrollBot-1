@@ -6,7 +6,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace TrollBot
+namespace TrollBot.Services
 {
     /// <summary>
     /// Represents a service to handle commands for the TrollBot
@@ -22,6 +22,11 @@ namespace TrollBot
         /// A reference shortcut to the DiscordSocketClient singleton
         /// </summary>
         private readonly DiscordSocketClient _discord;
+
+        /// <summary>
+        /// A reference shortcut to the RoastService singleton
+        /// </summary>
+        private readonly RoastService _roasts;
 
         // TODO: Move this to config
         /// <summary>
@@ -40,8 +45,9 @@ namespace TrollBot
         /// </summary>
         public CommandHandler()
         {
-            _commands = Services.Current.GetRequiredService<CommandService>();
-            _discord = Services.Current.GetRequiredService<DiscordSocketClient>();
+            _commands = Service.Current.GetRequiredService<CommandService>();
+            _discord = Service.Current.GetRequiredService<DiscordSocketClient>();
+            _roasts = Service.Current.GetRequiredService<RoastService>();
             _discord.MessageReceived += MessageReceivedAsync;
         }
 
@@ -72,7 +78,16 @@ namespace TrollBot
             string reply = await TryMessageAsCommand(message);
             if (reply == String.Empty) // Try to reply to the message anyways, as a TrollBot would
             {
-                // TODO: Implement 
+                if (_roasts.RollRoast())
+                {
+                    string userToRoast = message.Author.Username;
+
+                    if (message.Author is IGuildUser && ((message.Author as IGuildUser).Nickname != null))
+                    {
+                        userToRoast = (message.Author as IGuildUser).Nickname;
+                    }
+                    reply = _roasts.GetRoast(userToRoast);
+                }
             }
 
             if (reply != String.Empty)
@@ -98,7 +113,7 @@ namespace TrollBot
             }
 
             var context = new SocketCommandContext(_discord, message);
-            var result = await _commands.ExecuteAsync(context, argPos, Services.Current);
+            var result = await _commands.ExecuteAsync(context, argPos, Service.Current);
 
             if (result.Error.HasValue &&
                 result.Error.Value != CommandError.UnknownCommand)
