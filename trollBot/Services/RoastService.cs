@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace TrollBot.Services
@@ -14,6 +15,11 @@ namespace TrollBot.Services
         private string roastsPath = "./roasts.txt";
 
         /// <summary>
+        /// Defines the delimiter to use for all roasts when reading/saving
+        /// </summary>
+        private string roastDelimiter = "~\n";
+
+        /// <summary>
         /// The list of roasts,
         /// </summary>
         private List<string> _roasts;
@@ -23,15 +29,7 @@ namespace TrollBot.Services
         /// </summary>
         public RoastService()
         {
-            try
-            {
-                _roasts = new List<string>(System.IO.File.ReadAllText(roastsPath).Split("~\n"));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error when trying to parse roasts file:\n\n{0}\n\nUnable to roast members!", ex.ToString());
-                _roasts = new List<string>();
-            }
+            readIn().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace TrollBot.Services
         /// <summary>
         /// Represents the placeholder for the username to raost.
         /// </summary>
-        private const string usernamePlaceholder = "%USERNAME%";
+        private const string usernamePlaceholder = "%U%";
 
         /// <summary>
         /// Gets a random roast from the roasts list.
@@ -78,6 +76,63 @@ namespace TrollBot.Services
 
             int roll = _rng.Next(0, _roasts.Count);
             return _roasts[roll].Replace(usernamePlaceholder, username);
+        }
+
+        /// <summary>
+        /// Adds a roast to the roast collection and writes to disk.
+        /// </summary>
+        /// <param name="roast">The roast to add.</param>
+        /// <returns>True if the roast add succeeds, false otherwise</returns>
+        public async Task<bool> AddRoast(string roast)
+        {
+            _roasts.Add(roast);
+            return await writeOut();
+        }
+
+        /// <summary>
+        /// Reads in roasts from the roast configuration file.
+        /// </summary>
+        /// <returns>True if the read succeeds, false otherwise</returns>
+        private async Task<bool> readIn()
+        {
+            try
+            {
+                _roasts = new List<string>((await System.IO.File.ReadAllTextAsync(roastsPath)).Split(roastDelimiter));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error when trying to parse roasts file:\n\n{0}\n\nUnable to roast members!", ex.ToString());
+                _roasts = new List<string>();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Writes the current roasts to the roasts configuration file.
+        /// </summary>
+        /// <returns>Returns true if the write succeeds, false otherwise</returns>
+        private async Task<bool> writeOut()
+        {
+            try
+            {
+                string fileString = String.Empty;
+                foreach (string roast in _roasts)
+                {
+                    if (fileString != String.Empty)
+                    {
+                        fileString += roastDelimiter;
+                    }
+                    fileString += roast;
+                }
+                await System.IO.File.WriteAllTextAsync(roastsPath, fileString);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error when trying to write to roasts file:\n\n{0}", ex.ToString());
+                return false;
+            }
         }
     }
 }
