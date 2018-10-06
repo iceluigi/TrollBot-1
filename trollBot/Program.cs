@@ -31,7 +31,6 @@ namespace TrollBot
         /// <summary>
         /// The main entry point of the program, as an Async task.
         /// </summary>
-        /// <returns>Async task</returns>
         public async Task MainAsync()
         {
             try
@@ -68,7 +67,6 @@ namespace TrollBot
         /// Method to call any time something needs to be logged.
         /// </summary>
         /// <param name="log">The message to be logged</param>
-        /// <returns>Async task</returns>
         private Task LogAsync(LogMessage log)
         {
             Console.WriteLine(log.ToString());
