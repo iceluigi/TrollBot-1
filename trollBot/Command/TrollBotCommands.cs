@@ -14,7 +14,6 @@ namespace TrollBot.Commands
         /// <summary>
         /// The ping command. Does stuff. Except not really.
         /// </summary>
-        /// <returns>Async Task</returns>
         [Command("ping")]
         [Alias("pong", "hello")]
         public Task PingAsync()
@@ -26,7 +25,6 @@ namespace TrollBot.Commands
         /// Adds a roast to the roast list in the roast service, and saves it to the disc.
         /// </summary>
         /// <param name="roast">The roast to add.</param>
-        /// <returns>Async Task</returns>
         [Command("addroast", RunMode = RunMode.Async)]
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.Administrator)]
@@ -41,6 +39,18 @@ namespace TrollBot.Commands
             {
                 await ReplyAsync("Issue saving roast; roast is added but has not been saved to disc.");
             }
+        }
+
+        /// <summary>
+        /// Roasts an user
+        /// </summary>
+        /// <param name="username">The name of the user to roast</param>
+        [Command("roast", RunMode = RunMode.Async)]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task RoastAsyc([Remainder] string username)
+        {
+            await ReplyAsync(Service.Current.GetRequiredService<RoastService>().GetRoast(username));
         }
     }
 }

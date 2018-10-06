@@ -38,7 +38,7 @@ namespace TrollBot.Services
         /// <summary>
         /// The full bot-name prefix to use for commands
         /// </summary>
-        private const string longPrefix = "troll";
+        private const string longPrefix = "troll ";
 
         /// <summary>
         /// Initiailizes a new instance of the CommandHandler class
@@ -54,7 +54,6 @@ namespace TrollBot.Services
         /// <summary>
         /// Initializes the CommandHandler
         /// </summary>
-        /// <returns>Async task</returns>
         public async Task InitializeAsync()
         {
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
@@ -64,7 +63,6 @@ namespace TrollBot.Services
         /// A callback method to be used whenever the bot detects a message has been received
         /// </summary>
         /// <param name="rawMessage">The message to process</param>
-        /// <returns>Async tasak</returns>
         public async Task MessageReceivedAsync(SocketMessage rawMessage)
         {
             // Ignore system messages, or messages from other bots
