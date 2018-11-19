@@ -58,7 +58,7 @@ namespace TrollBot.Services
         }
 
         /// <summary>
-        /// Represents the placeholder for the username to raost.
+        /// Represents the placeholder for the username to roast.
         /// </summary>
         private const string usernamePlaceholder = "%U%";
 

@@ -41,6 +41,7 @@ namespace TrollBot
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<RoastService>()
+                .AddSingleton<AudioService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<HttpClient>()
                 .BuildServiceProvider();

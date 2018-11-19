@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json;
+using TrollBot.Services;
 
 namespace TrollBot
 {
@@ -40,7 +41,7 @@ namespace TrollBot
                 var config = JsonConvert.DeserializeObject<Config>(System.IO.File.ReadAllText(configPath));
 
                 // Check config to make sure token exists...
-                if (config.Token == String.Empty || config.Token == null)
+                if (string.IsNullOrEmpty(config.Token))
                 {
                     throw new Exception("String retrieved from config is empty or null.");
                 }
